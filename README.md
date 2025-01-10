@@ -1,6 +1,6 @@
 # LongProc
 
-[[Paper](#)]
+[[Paper](https://arxiv.org/pdf/2501.05414)]
 
 **LongProc** (**Long Proc**edural Generation) is a benchmark that evaluates long-context LLMs through long procedural generation, which requires models to follow specified procedures and generate structured outputs. See examples tasks below.
 
