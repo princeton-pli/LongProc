@@ -1,0 +1,200 @@
+[
+  {
+    "ground_truth_cities": "Helsinki**Barcelona**Florence",
+    "ground_truth_durations": "5**5**6",
+    "num_cities": 3,
+    "total_days": 14,
+    "constraints": [
+      {
+        "type": "duration",
+        "city": "Florence",
+        "num_days": 6
+      },
+      {
+        "type": "fixed",
+        "city": "Florence",
+        "start_day": 9,
+        "end_day": 14
+      },
+      {
+        "type": "duration",
+        "city": "Barcelona",
+        "num_days": 5
+      },
+      {
+        "type": "duration",
+        "city": "Helsinki",
+        "num_days": 5
+      }
+    ],
+    "connected_cities": [
+      [
+        "Barcelona",
+        "Florence"
+      ],
+      [
+        "Helsinki",
+        "Barcelona"
+      ]
+    ],
+    "original_question_text": "You plan to visit 3 European cities for 14 days in total. You only take direct flights to commute between cities. You would like to visit Florence for 6 days. You want to meet a friend in Florence between day 9 and day 14. You would like to visit Barcelona for 5 days. You would like to visit Helsinki for 5 days.\n\nHere are the cities that have direct flights:\nBarcelona and Florence, Helsinki and Barcelona.\n\nFind a trip plan of visiting the cities for 14 days by taking direct flights to commute between them.",
+    "disambig_question_text": "You plan to visit 3 European cities for 14 days in total. You only take direct flights to commute between cities. You would like to visit Florence for 6 days. You want to meet a friend in Florence between day 9 and day 14. You would like to visit Barcelona for 5 days. You would like to visit Helsinki for 5 days.\n\nHere are the cities that have direct flights:\nfrom Barcelona to Florence, from Helsinki to Barcelona.\n\nFind a trip plan of visiting the cities for 14 days by taking direct flights to commute between them.",
+    "ground_truth_plan": "Here is the trip plan for visiting the 3 European cities for 14 days:\n\n**Day 1-5:** Arriving in Helsinki and visit Helsinki for 5 days.\n**Day 5:** Fly from Helsinki to Barcelona.\n**Day 5-9:** Visit Barcelona for 5 days.\n**Day 9:** Fly from Barcelona to Florence.\n**Day 9-14:** Visit Florence for 6 days.",
+    "id": "trip_planning_example_0"
+  },
+  {
+    "ground_truth_cities": "Dublin**Manchester**Split",
+    "ground_truth_durations": "5**3**7",
+    "num_cities": 3,
+    "total_days": 13,
+    "constraints": [
+      {
+        "type": "duration",
+        "city": "Manchester",
+        "num_days": 3
+      },
+      {
+        "type": "fixed",
+        "city": "Manchester",
+        "start_day": 5,
+        "end_day": 7
+      },
+      {
+        "type": "duration",
+        "city": "Split",
+        "num_days": 7
+      },
+      {
+        "type": "duration",
+        "city": "Dublin",
+        "num_days": 5
+      }
+    ],
+    "connected_cities": [
+      [
+        "Dublin",
+        "Split"
+      ],
+      [
+        "Manchester",
+        "Split"
+      ],
+      [
+        "Dublin",
+        "Manchester"
+      ]
+    ],
+    "original_question_text": "You plan to visit 3 European cities for 13 days in total. You only take direct flights to commute between cities. You would like to visit Manchester for 3 days. You plan to visit relatives in Manchester between day 5 and day 7. You plan to stay in Split for 7 days. You plan to stay in Dublin for 5 days.\n\nHere are the cities that have direct flights:\nDublin and Split, from Manchester to Split, Dublin and Manchester.\n\nFind a trip plan of visiting the cities for 13 days by taking direct flights to commute between them.",
+    "disambig_question_text": "You plan to visit 3 European cities for 13 days in total. You only take direct flights to commute between cities. You would like to visit Manchester for 3 days. You plan to visit relatives in Manchester between day 5 and day 7. You plan to stay in Split for 7 days. You plan to stay in Dublin for 5 days.\n\nHere are the cities that have direct flights:\nfrom Dublin to Split, from Manchester to Split, from Dublin to Manchester.\n\nFind a trip plan of visiting the cities for 13 days by taking direct flights to commute between them.",
+    "ground_truth_plan": "Here is the trip plan for visiting the 3 European cities for 13 days:\n\n**Day 1-5:** Arriving in Dublin and visit Dublin for 5 days.\n**Day 5:** Fly from Dublin to Manchester.\n**Day 5-7:** Visit Manchester for 3 days.\n**Day 7:** Fly from Manchester to Split.\n**Day 7-13:** Visit Split for 7 days.",
+    "id": "trip_planning_example_67"
+  },
+  {
+    "ground_truth_cities": "Dubrovnik**Zurich**Porto**Lyon",
+    "ground_truth_durations": "5**3**7**5",
+    "num_cities": 4,
+    "total_days": 17,
+    "constraints": [
+      {
+        "type": "duration",
+        "city": "Dubrovnik",
+        "num_days": 5
+      },
+      {
+        "type": "duration",
+        "city": "Lyon",
+        "num_days": 5
+      },
+      {
+        "type": "duration",
+        "city": "Porto",
+        "num_days": 7
+      },
+      {
+        "type": "duration",
+        "city": "Zurich",
+        "num_days": 3
+      },
+      {
+        "type": "fixed",
+        "city": "Zurich",
+        "start_day": 5,
+        "end_day": 7
+      }
+    ],
+    "connected_cities": [
+      [
+        "Zurich",
+        "Porto"
+      ],
+      [
+        "Porto",
+        "Lyon"
+      ],
+      [
+        "Dubrovnik",
+        "Zurich"
+      ]
+    ],
+    "original_question_text": "You plan to visit 4 European cities for 17 days in total. You only take direct flights to commute between cities. You would like to visit Dubrovnik for 5 days. You want to spend 5 days in Lyon. You would like to visit Porto for 7 days. You would like to visit Zurich for 3 days. From day 5 to day 7, there is a annual show you want to attend in Zurich.\n\nHere are the cities that have direct flights:\nZurich and Porto, Porto and Lyon, Dubrovnik and Zurich.\n\nFind a trip plan of visiting the cities for 17 days by taking direct flights to commute between them.",
+    "disambig_question_text": "You plan to visit 4 European cities for 17 days in total. You only take direct flights to commute between cities. You would like to visit Dubrovnik for 5 days. You want to spend 5 days in Lyon. You would like to visit Porto for 7 days. You would like to visit Zurich for 3 days. From day 5 to day 7, there is a annual show you want to attend in Zurich.\n\nHere are the cities that have direct flights:\nfrom Zurich to Porto, from Porto to Lyon, from Dubrovnik to Zurich.\n\nFind a trip plan of visiting the cities for 17 days by taking direct flights to commute between them.",
+    "ground_truth_plan": "Here is the trip plan for visiting the 4 European cities for 17 days:\n\n**Day 1-5:** Arriving in Dubrovnik and visit Dubrovnik for 5 days.\n**Day 5:** Fly from Dubrovnik to Zurich.\n**Day 5-7:** Visit Zurich for 3 days.\n**Day 7:** Fly from Zurich to Porto.\n**Day 7-13:** Visit Porto for 7 days.\n**Day 13:** Fly from Porto to Lyon.\n**Day 13-17:** Visit Lyon for 5 days.",
+    "id": "trip_planning_example_206"
+  },
+  {
+    "ground_truth_cities": "Hamburg**Helsinki**Krakow**Vilnius",
+    "ground_truth_durations": "6**6**3**5",
+    "num_cities": 4,
+    "total_days": 17,
+    "constraints": [
+      {
+        "type": "duration",
+        "city": "Krakow",
+        "num_days": 3
+      },
+      {
+        "type": "duration",
+        "city": "Vilnius",
+        "num_days": 5
+      },
+      {
+        "type": "duration",
+        "city": "Hamburg",
+        "num_days": 6
+      },
+      {
+        "type": "duration",
+        "city": "Helsinki",
+        "num_days": 6
+      },
+      {
+        "type": "fixed",
+        "city": "Helsinki",
+        "start_day": 6,
+        "end_day": 11
+      }
+    ],
+    "connected_cities": [
+      [
+        "Helsinki",
+        "Krakow"
+      ],
+      [
+        "Helsinki",
+        "Vilnius"
+      ],
+      [
+        "Krakow",
+        "Vilnius"
+      ],
+      [
+        "Hamburg",
+        "Helsinki"
+      ]
+    ],
+    "original_question_text": "You plan to visit 4 European cities for 17 days in total. You only take direct flights to commute between cities. You want to spend 3 days in Krakow. You plan to stay in Vilnius for 5 days. You would like to visit Hamburg for 6 days. You want to spend 6 days in Helsinki. You plan to visit relatives in Helsinki between day 6 and day 11.\n\nHere are the cities that have direct flights:\nHelsinki and Krakow, Helsinki and Vilnius, from Krakow to Vilnius, Hamburg and Helsinki.\n\nFind a trip plan of visiting the cities for 17 days by taking direct flights to commute between them.",
+    "disambig_question_text": "You plan to visit 4 European cities for 17 days in total. You only take direct flights to commute between cities. You want to spend 3 days in Krakow. You plan to stay in Vilnius for 5 days. You would like to visit Hamburg for 6 days. You want to spend 6 days in Helsinki. You plan to visit relatives in Helsinki between day 6 and day 11.\n\nHere are the cities that have direct flights:\nfrom Helsinki to Krakow, from Helsinki to Vilnius, from Krakow to Vilnius, from Hamburg to Helsinki.\n\nFind a trip plan of visiting the cities for 17 days by taking direct flights to commute between them.",
+    "ground_truth_plan": "Here is the trip plan for visiting the 4 European cities for 17 days:\n\n**Day 1-6:** Arriving in Hamburg and visit Hamburg for 6 days.\n**Day 6:** Fly from Hamburg to Helsinki.\n**Day 6-11:** Visit Helsinki for 6 days.\n**Day 11:** Fly from Helsinki to Krakow.\n**Day 11-13:** Visit Krakow for 3 days.\n**Day 13:** Fly from Krakow to Vilnius.\n**Day 13-17:** Visit Vilnius for 5 days.",
+    "id": "trip_planning_example_256"
+  }
+]

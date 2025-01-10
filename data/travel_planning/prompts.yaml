@@ -1,0 +1,32 @@
+USER_PROMPT: |-
+  TASK:
+  Your task is to create a trip plan based on given constraints regarding cities to visit, duration of stays for each city, and available direct flight connections.
+
+  REQUIREMENTS AND NOTES:
+  - You will arrange a trip plan for visiting several cities for a specified total number of days.
+  - You will be informed about how long we will stay in each city. Some cities have fixed schedules because of pre-planned events. You have to follow the fixed schedules for those cities. Cities without fixed schedules need to be arranged according to the constraints.
+  - You will be provided with information about direct flight connections between cities. Only direct flights may be used to travel between cities. Note that the flight information is one-way. For example, if there is a direct flight from City A to City B, it does not necessarily mean that there is a direct flight from City B to City A, unless it is explicitly mentioned. There ALWAYS exists a direct flight from the starting point to the first city in the plan.
+  - When calculating the duration of a stay in a city, count both arrival and departure days as full days. If you arrive at a city on Day x and stay for y days, you will leave the city on Day x + y - 1. For example, if you arrive in a city on Day 1 and stay for 3 days, you will depart on Day 3.
+  - When handling the cities with fixed schedules, these fixed schedules may overlap with the arrival and departure days of other cities. For example, if City A has a fixed schedule from Day 4 to Day 7, you can depart another city and arrive in City A on Day 4, and you can depart City A and arrive in another city on Day 7.
+
+  APPROACH:
+  We will solve the problem by searching. You will follow this process:
+  - First, read the constraints carefully and identify the cities that have fixed schedules and the cities needing arrangement.
+  - Next, you will search for the trip plan starting from Day 1. At each day, you will execute the following steps:
+    * Check whether the schedule for the current day is fixed. If it is fixed, the only option for the day is to follow the fixed schedule. If it is not fixed, you will consider possible options from the cities needing arrangement.
+    * For each option, you will check whether it is feasible to arrange the city on the current day. You will first check whether there is a direct flight from the last city on the plan to the current city.
+    * For each option, you will also check whether the arrangement is compatible with the fixed schedules. Recall that fixed schedules may overlap with the arrival and departure days of other cities. It is considered incompatible only if the departure day is later than the required arrival day for the following fixed schedule. For example, you can depart from City A on Day 3 and arrive in City B, which has a fixed schedule of Day 3 - 6. However, you cannot depart from City A on Day 4, which is later than the required arrival day for City B.
+    * If the arrangement is not feasible, you will drop this branch and try the next option. If the arrangement is feasible, you will continue to arrange the rest of the plan. If you fail to arrange any option on the current day, you will drop this branch and backtrack to the previous stage.
+  - You will continue this process until you have arranged all the cities in the trip plan and find a complete plan.
+  - Finally, you will output the complete trip plan.
+
+  EXAMPLES:
+  {demonstration}
+
+  YOUR TASK:
+  Now, make a trip plan according to the following constraints. Note that: 
+  - Please carefully read the approach and examples provided above, and follow them to make the trip plan.
+  - Please ALWAYS include your solving procedure and mark it with <Solving Procedure> and </Solving Procedure> tags. The solving procedure should follow the format of the examples provided above.
+  - Please mark your final plan with <Plan> and </Plan> tags. The final plan should also follow the format of the examples provided above.
+
+  {problem}

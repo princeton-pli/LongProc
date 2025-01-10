@@ -1,0 +1,33 @@
+USER_PROMPT: |-
+  [TASK]:
+  You will be given lines of pseudocode, your task is to write the corresponding C++ code. The pseudocode will provide detailed description of the c++ code line by line. The pseudocode is garanteed to be correct and complete.
+
+  [INSTRUCTION]:
+  The following libraries are already included in the code.
+  ```cpp
+  #include <cstdio>
+  #include <iostream>
+  #include <vector>
+  #include <algorithm>
+  #include <numeric>
+  #include <cmath>
+  #include <cstring>
+  #include <set>
+  #include <map>
+  #include <queue>
+  #include <stack>
+  #include <list>
+  #include <fstream>
+  #include <climits>
+  #include <cassert>
+  #include <iomanip>
+  #include <sstream>
+  #include <bitset>
+  using namespace std;
+  ```
+  Do not include them in your code again. Please surround your code with ```cpp and ``` markers. Note that the code should correspond to the pseudocode line by line.
+
+  [PSEUDOCODE]:
+  {pseudocode}
+
+  [CODE]:
