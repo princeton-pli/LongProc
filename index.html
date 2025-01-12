@@ -143,7 +143,7 @@
             <img src="./static/images/data_example.png" width="60%"/>
   
             <p style="width: 70%; margin-left: auto; margin-right: auto">
-              Three (out of six) representative tasks in <b>LongProc</b>: HTML to TSV, Theory-of- Mind Tracking, Travel Planning. Tasks in <b>LongProc</b> require LLMs to follow a given procedure detailed by instructions and generate long-form outputs  (up to 8K tokens) in a specified format.
+              Three (out of six) representative tasks in <b>LongProc</b>: HTML to TSV, Theory-of- Mind Tracking, Travel Planning. Tasks in <b>LongProc</b> require LLMs to follow a given procedure detailed by instructions and generate long-form outputs  (up to 8K tokens) in a specified format. Click <a class="fancy_text_color" href="#full_examples">here</a> to view full examples.
           </div>
         </div>
       </section>
@@ -231,6 +231,37 @@
   </div>
 </section>
 
+
+<section id="full_examples" class="section">
+  <div class="container" style="margin-bottom: 2vh;">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 id="full_examples" class="title is-3">Full Examples</h2>
+        <!-- document.getElementById('pdfViewer').src='path/to/pdf1.pdf'; document.getElementById('pdfTitle').textContent='PDF 1' -->
+          <button class="button is-rounded is-dark" onclick="document.getElementById('example_viewer').style.display='block'; document.getElementById('example_pdf').src='./static/pdfs/exs_htmltotsv.pdf'; document.getElementById('example_caption').textContent='HTML to TSV: Extract specified information from HTML pages and structure it into a table format (TSV).'">HTML to TSV</button>
+          <button class="button is-rounded is-dark" onclick="document.getElementById('example_viewer').style.display='block'; document.getElementById('example_pdf').src='./static/pdfs/exs_pseudocode.pdf'; document.getElementById('example_caption').textContent='Pseudocode to Code. Translate pseudocode that is structured line-by-line into corresponding C++ code.'">Code to Pseudocode</button>
+          <button class="button is-rounded is-dark" onclick="document.getElementById('example_viewer').style.display='block'; document.getElementById('example_pdf').src='./static/pdfs/exs_path.pdf'; document.getElementById('example_caption').textContent='Path Traversal: Traverse a route that connects two cities in a graph where each city has only one outgoing connection.'">Path Traversal</button>
+        <br>
+        <br>
+          <button class="button is-rounded is-dark" onclick="document.getElementById('example_viewer').style.display='block'; document.getElementById('example_pdf').src='./static/pdfs/exs_tom.pdf'; document.getElementById('example_caption').textContent='Theory-of-Mind Tracking. Track the locations and beliefs in stories about object placement asked in the question.'">Theory-of-Mind Tracking</button>
+          <button class="button is-rounded is-dark" onclick="document.getElementById('example_viewer').style.display='block'; document.getElementById('example_pdf').src='./static/pdfs/exs_countdown.pdf'; document.getElementById('example_caption').textContent='Countdown. Search to combine a set of numbers with basic arithmetic operations to reach a target number.'">Countdown</button>
+          <button class="button is-rounded is-dark" onclick="document.getElementById('example_viewer').style.display='block'; document.getElementById('example_pdf').src='./static/pdfs/exs_travel.pdf'; document.getElementById('example_caption').textContent='Travel Planning. Search to create a trip plan based on constraints regarding duration of stays, and direct flights.'">Travel Planning</button>
+        <br>
+        <div id="example_viewer" style="display: none;">
+          <br>
+          <h3 class="caption">
+            <b>Example:</b> <span id="example_caption"> Travel Planning. Search to create a trip plan based on constraints regarding duration of stays, and direct flights.</span></h3>
+          <br>
+          <div class="content has-text-centered">
+              <embed id="example_pdf" type="application/pdf" src="" width= "100%" height= "600" >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> 
+</section>
+
+
 <footer class="footer" style="padding-bottom: 1.5em; padding-top: 1.5em;">
   <div class="container">
     <div class="content has-text-centered">
@@ -251,13 +282,12 @@
   <script src="./static/js/csv_to_html_table.js"></script>
   <script>
     CsvToHtmlTable.init({
-      csv_path: 'data/val_result.csv', 
+      csv_path: 'data/full_result.csv', 
       element: 'table-container', 
-      allow_download: true,
       csv_options: {separator: ',', delimiter: '"'},
       datatables_options: {
         "paging": false, 
-        "order": [[3, 'desc']],
+        "order": [[4, 'desc']],
         "columnDefs": [
         {targets: [0], className: 'dt-left', className: 'dt-head-left'},
         ]
