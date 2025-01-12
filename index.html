@@ -123,7 +123,7 @@
                 </a>
               </span>
               <!-- Leaderboard Link. -->
-              <!-- <span class="link-block">
+              <span class="link-block">
                 <a href="#leaderboard"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
@@ -131,7 +131,7 @@
                   </span>
                   <span>Leaderboard</span>
                 </a>
-              </span> -->
+              </span>
             </div>
           </div>
         </div>
@@ -154,7 +154,7 @@
   <div class="container" style="margin-bottom: 2vh;">
     <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
+      <div class="column is-9">
         <h2 class="title is-3">Introduction</h2>
         <div class="content has-text-justified">
           <p> Existing benchmarks for evaluating long-context language models (LCLMs) primarily focus on long-context recall, requiring models to produce short responses based on a few critical snippets while processing thousands of irrelevant tokens.
@@ -166,42 +166,40 @@
             We evaluate 17 LCLMs on LongProc across three difficulty levels, with maximum numbers of output tokens set at 500, 2K, and 8K. Notably, while all tested models claim a context window size above 32K tokens, open-weight models typically falter on 2K-token tasks, and closed-source models like GPT-4o show significant degradation on 8K-token tasks. Further analysis reveals that LCLMs struggle to maintain long-range coherence in long-form generations. These findings highlight critical limitations in current LCLMs and suggest substantial room for improvement.
           </p>
         </div>
-        <h2 class="title is-3" id="leaderboard">
-          Experimental Results
-        </h2>
-        <div class="content">
+        <br>
+        <h2 class="title is-3" id="leaderboard"> Leaderboard: Overall Performance</h2>
+        <div class="content has-text-justified">
+          <p> <b>Table: Average performance across six tasks</b> on LongProc under <b>three difficulty levels</b> with maximum numbers of output tokens set at 500, 2K, and 8K. Even frontier models struggle with 8K-token procedural generation tasks. All models show performance degradation with increased output length. Click <a class="fancy_text_color" href="#full_results">here</a> to view detailed results for all tasks across difficulty levels. </p>
+        </div>
+        <div class="content is-9">
           <div class="content has-text-justified">
-            <p>
-              We evaluate LCLMs on LongProc under <b>three difficulty levels</b> with maximum numbers of output tokens set at 500, 2K, and 8K. Our evaluation covers both frontier closed-sourced models and open-weight models from various model families.
-            </p>
-            <div class="has-text-centered">
-              <div id="table-container"></div>
+            <div>
+              <div id="table-container-agg"></div>
             </div>
           </div>
         </div>
-        <div class="has-text-centered">
+
+        <!-- <div class="has-text-centered">
           <img src="./static/images/overall_scores.png" width="70%">
         </div>
         <div class="has-text-centered">
           <p>
             <b>Figure:</b> Average performance across tasks of different LCLMs on LONGPROC at three difficulty levels (0.5K, 2K, 8K). All models show performance degradation with increased output length. Even frontier models struggle with 8K-token procedural generation tasks.</p>
-        </div>
+        </div> -->
         <br>
-        <div class="has-text-centered">
-          <img src="./static/images/comparison.png" width="70%">
-        </div>
+        <h3 class="subtitle"><b>Performance Comparison across Tasks</b></h3>
         <div class="has-text-centered">
           <p>
-            <b>Figure:</b> Performance comparison across tasks and output lengths (grey blocks indicate unavailable configurations). We observe steeper performance degradation in tasks requiring long-range reasoning (three tasks at the bottom). See paper for full results.</p>
+            Performance comparison across tasks and output lengths. We observe steeper performance degradation in tasks requiring long-range reasoning (three tasks at the bottom). Here we list a few representative models. Click <a class="fancy_text_color" href="#full_results">here</a> to view results for all models.
+          </p>
+        </div>
+        <div class="has-text-centered">
+          <img src="./static/images/comparison.png" width="80%">
         </div>
       </div>
-      
     </div>
-    
-    <!--/ Abstract. -->
 </div>
 </section>
-
 
 <br><br>
 
@@ -236,7 +234,7 @@
   <div class="container" style="margin-bottom: 2vh;">
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
-        <h2 id="full_examples" class="title is-3">Full Examples</h2>
+        <h2 id="full_examples" class="title is-3">Data Examples</h2>
         <!-- document.getElementById('pdfViewer').src='path/to/pdf1.pdf'; document.getElementById('pdfTitle').textContent='PDF 1' -->
           <button class="button is-rounded is-dark" onclick="document.getElementById('example_viewer').style.display='block'; document.getElementById('example_pdf').src='./static/pdfs/exs_htmltotsv.pdf'; document.getElementById('example_caption').textContent='HTML to TSV: Extract specified information from HTML pages and structure it into a table format (TSV).'">HTML to TSV</button>
           <button class="button is-rounded is-dark" onclick="document.getElementById('example_viewer').style.display='block'; document.getElementById('example_pdf').src='./static/pdfs/exs_pseudocode.pdf'; document.getElementById('example_caption').textContent='Pseudocode to Code. Translate pseudocode that is structured line-by-line into corresponding C++ code.'">Code to Pseudocode</button>
@@ -262,6 +260,27 @@
 </section>
 
 
+<section class="section no_pad_section">
+  <div class="container" style="margin-bottom: 2vh;">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-11">
+        <h2 class="title is-3" id="leaderboard"> Detail Results across Tasks</h2>
+        <div class="content is-11">
+          <div class="content has-text-justified">
+            <div>
+              <div id="table-container-full"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+</div>
+</section>
+
+
+
 <footer class="footer" style="padding-bottom: 1.5em; padding-top: 1.5em;">
   <div class="container">
     <div class="content has-text-centered">
@@ -279,18 +298,44 @@
   <script src="./static/js/jquery.csv.min.js"></script>
   <script src="https://cdn.datatables.net/2.0.8/js/dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/2.0.8/js/dataTables.bulma.min.js"></script>
-  <script src="./static/js/csv_to_html_table.js"></script>
+  <script src="./static/js/csv_to_html_table_agg.js"></script>
+  <script src="./static/js/csv_to_html_table_full.js"></script>
   <script>
-    CsvToHtmlTable.init({
-      csv_path: 'data/full_result.csv', 
-      element: 'table-container', 
+    CsvToHtmlTableAgg.init({
+      csv_path: 'data/agg_results.csv', 
+      element: 'table-container-agg', 
       csv_options: {separator: ',', delimiter: '"'},
       datatables_options: {
         "paging": false, 
+        "searching": false,
+        "info": false,
         "order": [[4, 'desc']],
         "columnDefs": [
-        {targets: [0], className: 'dt-left', className: 'dt-head-left'},
-        ]
+        {targets: [0], className: 'dt-left', className: 'dt-head-left', className: 'fw-bold'},
+        ],
+        "createdRow": function(row, data, dataIndex) {
+          $(row).find('td:first').css('font-weight', 'bold');
+        }
+      }
+    });
+
+    CsvToHtmlTableFull.init({
+      csv_path: 'data/full_results.csv', 
+      element: 'table-container-full', 
+      csv_options: {separator: ',', delimiter: '"'},
+      datatables_options: {
+        "paging": false, 
+        "searching": false,
+        "info": false,
+        "order": [[4, 'desc']],
+        "scrollX": true,
+        "scrollCollapse": true,
+        "columnDefs": [
+        {targets: 0, className: 'dt-left', className: 'dt-head-left', className: 'fw-bold', className: 'nowrap'},
+        ],
+        "createdRow": function(row, data, dataIndex) {
+          $(row).find('td:first').css('font-weight', 'bold').css('white-space', 'nowrap');
+        }
       }
     });
   </script>
