@@ -6,11 +6,18 @@ import yaml
 import re
 
 from .spoc_evaluator import evaluate_spoc_code
+from .tom_tracking_evaluator import evaluate_tom_trace
+from .countdown_evaluator import (
+    build_countdown_demonstration,
+    evaluate_countdown_final_solution,
+    evaluate_countdown_search_procedure
+)
 from .travel_planning_evaluator import (
     build_travel_plan_demonstration,
     evaluate_travel_plan_solution,
     evaluate_travel_plan_search_procedure
 )
+
 
 def _extract_with_tag(response: str, tag: str):
     start = response.find(f"<{tag}>")
@@ -46,7 +53,7 @@ def eval_pseudo_to_code(prediction: str, example: dict):
 
 def _load_pseudo_to_code_data(dataset_name: str, path: str=None) -> Tuple[Dict, Callable]:
     assert dataset_name in ["pseudo_to_code_0.5k", "pseudo_to_code_2k"]
-    if path is None: path = "longpro_data"
+    if path is None: path = "longproc_data"
 
     path = os.path.join(path, "pseudo_to_code")
 
@@ -108,7 +115,7 @@ def _load_path_traversal_data(dataset_name: str, path: str=None) -> Tuple[Dict, 
     # path is a dataset folder, containing different levels of path traversal data
     assert dataset_name in ["path_traversal_0.5k", "path_traversal_2k", "path_traversal_8k"]
 
-    if path is None: path = "longpro_data"
+    if path is None: path = "longproc_data"
 
     path = os.path.join(path, "path_traversal")
 
@@ -138,12 +145,127 @@ def _load_path_traversal_data(dataset_name: str, path: str=None) -> Tuple[Dict, 
     }, eval_path_traversal
 
 
+def eval_tom_tracking(prediction: str, example: dict):
+    gt_solution = example["reference_output"]
+
+    parsed_pred = "\n".join([line for line in prediction.splitlines() if line.strip().startswith('-')])
+    parsed_gt = "\n".join([line for line in gt_solution.splitlines() if line.strip().startswith('-')])
+
+    strict_acc, partial_acc, error_report = evaluate_tom_trace(parsed_pred, parsed_gt)
+
+    return {"accuracy": strict_acc, "partial_accuracy":  partial_acc, "extraction_rate": 1.0}, {"parsed_output": parsed_pred, "error_report": error_report}
+
+
 def _load_tom_tracking_data(dataset_name: str, path: str=None) -> Tuple[Dict, Callable]:
-    raise NotImplementedError
+    assert dataset_name in ["tom_tracking_0.5k", "tom_tracking_2k", "tom_tracking_8k"]
+
+    if path is None: path = "longproc_data"
+
+    path = os.path.join(path, "tom_tracking")
+
+    data_file = os.path.join(path, dataset_name + ".json")
+    with open(data_file, "r") as f:
+        data = json.load(f)
+
+    with open(os.path.join(path, "prompts.yaml"), "r") as f:
+        prompt = yaml.safe_load(f)
+        user_prompt = prompt['USER_PROMPT']
+
+    data_purged = []
+    for d in data:
+        story_components = d["story_components"]
+        story = d["story"]
+        question = d["question"]
+        reference_output = d["solution"]
+        data_purged.append({
+            "story_components": story_components,
+            "story": story,
+            "question": question,
+            "reference_output": reference_output,
+        })
+
+    return {
+        "data": data_purged,
+        "prompt_template": user_prompt,
+    }, eval_tom_tracking
+
+
+def eval_countdown(prediction: str, example: dict):
+    """
+    Returns: metrics (dict) and additional info to update the original sample with (dict)
+    """
+    data_item = example["item"]
+    pred_solution = _extract_with_tag(prediction, "Solution")
+    nums = data_item["nums"]
+    target = data_item["target"]
+    if pred_solution is not None and evaluate_countdown_final_solution(nums, target, pred_solution):
+            return {"accuracy": 1.0, "partial_accuracy": 1.0, "extraction_rate": 1.0}, {"parsed_output": pred_solution,}
+
+    extraction_rate = 1.0 if pred_solution is not None else 0.0
+    # handle probably unclosed search procedure
+    if "# Search Procedure" not in prediction:
+        return {"accuracy": 0.0, "partial_accuracy": 0.0, "extraction_rate": extraction_rate}, {"parsed_output": None,}
+
+    pred_procedure = prediction.split("# Search Procedure")[-1].strip()
+
+    ground_truth_procedure = data_item["reference_output"]
+    # evaluate the procedure
+    gt_procedure = ground_truth_procedure.split("# Search Procedure")[-1].split("Now we have found the target")[0].strip()
+
+    partial_accuracy, error_report = evaluate_countdown_search_procedure(nums, target, pred_procedure, gt_procedure)
+    return {"accuracy": 0.0, "partial_accuracy": partial_accuracy, "extraction_rate": extraction_rate}, {"parsed_output": pred_solution, "error_report": error_report}
 
 
 def _load_countdown_data(dataset_name: str, path: str=None) -> Tuple[Dict, Callable]:
-    raise NotImplementedError
+    assert dataset_name in ["countdown_0.5k", "countdown_2k", "countdown_8k"]
+
+    if path is None: path = "longproc_data"
+
+    path = os.path.join(path, "countdown")
+
+    data_file = os.path.join(path, dataset_name + ".json")
+    with open(data_file, "r") as f:
+        data = json.load(f)
+
+    with open(os.path.join(path, "prompts.yaml"), "r") as f:
+        prompt = yaml.safe_load(f)
+        user_prompt = prompt['USER_PROMPT']
+
+    def build_icl_demonstration():
+        _DEMO_SET = [
+            {"nums": [40, 19, 23, 7], "target": 29,},
+            {"nums": [9, 16, 6, 18], "target": 12,},
+        ]
+        examples = []
+        for demo in _DEMO_SET:
+            _, demonstration = build_countdown_demonstration(demo["nums"], demo["target"])
+            examples.append(f"# Example\nNumbers: {demo['nums']}\nTarget: {demo['target']}\n\n{demonstration}")
+        examples = "\n\n".join(examples)
+        return examples
+
+    # partially fill the user prompt
+    user_prompt = user_prompt.format(demonstration=build_icl_demonstration(), nums="{nums}", target="{target}")
+
+    data_purged = []
+    for d in data:
+        nums = d["nums"]
+        target = d["target"]
+        solution, demonstration = build_countdown_demonstration(nums[:], target)
+        solution_str = "\n".join(solution)
+        assert evaluate_countdown_final_solution(nums, target, solution_str), f"Failed to evaluate solution {solution_str}"
+        data_purged.append({
+            "nums": nums,
+            "target": target,
+            "solution": solution,
+            "reference_output": demonstration,
+        })
+
+
+    return {
+        "data": data_purged,
+        "prompt_template": user_prompt,
+    }, eval_countdown
+
 
 def eval_travel_planning(prediction: str, example: dict):
     plan_text = _extract_with_tag(prediction, "Plan")
@@ -175,7 +297,7 @@ def eval_travel_planning(prediction: str, example: dict):
 def _load_travel_planning_data(dataset_name: str, path: str=None) -> Tuple[Dict, Callable]:
     assert dataset_name in ["travel_planning_2k", "travel_planning_8k"]
 
-    if path is None: path = "longpro_data"
+    if path is None: path = "longproc_data"
     path = os.path.join(path, "travel_planning")
 
     data_file = os.path.join(path, "travel_planning_all.json")

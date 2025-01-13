@@ -8,17 +8,9 @@
   <img width="60%" alt="image" src="https://princeton-pli.github.io/LongProc/static/images/data_example.png">
 </p>
 
-
-## Release Progress
-
-- [ ] Loading data and evaluating predictions (in progress, 3/6)
-- [ ] Running evaluation with [HELMET](https://github.com/princeton-nlp/HELMET)
-
-
 ## Data
 LongProc consists of 6 tasks. Each tasks generally includes three difficulty levels with maximum numbers of output tokens set at 500, 2K, and 8K. The 6 tasks are included as follows:
-* `html_to_tsv`(HTML TO TSV): Extract specified information from HTML pages and
-structure it into a table format (TSV)
+* `html_to_tsv`(HTML TO TSV): Extract specified information from HTML pages and structure it into a table format (TSV)
 * `pseudo_to_code` (Pseudocode to Code): Translate pseudocode that is structured line-by-line into corresponding C++ code.
 * `path_traversal` (Path Traversal): Traverse a route that connects two cities in a graph where each city has only one outgoing connection.
 * `tom_tracking` (Theory-of-Mind Tracking): Track the locations and beliefs in stories about object placement asked in the question.

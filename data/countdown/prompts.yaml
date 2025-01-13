@@ -1,0 +1,31 @@
+USER_PROMPT: |-
+  [TASK]
+  You will be given four numbers and a target number, your task is to find a way to use all four numbers exactly once, along with the basic operations (+, -, *, /), to reach the target number.
+
+  [RULES]
+  - You can use each number exactly once.
+  - You can use the four basic operations (+, -, *, /).
+  - The intermediate results must be integers (no decimals allowed).
+  - The intermediate results must be positive.
+  - The intermediate results will not exceed 2000.
+
+  [APPROACH]
+  We will solve the problem by searching. Starting from a given set of four numbers, we will follow this search process:
+  - At each state, we will consider all possible number pairs (in order) from the current number set. Choose one pair and apply one of the four basic operations to them to obtain a new number.
+    * If there are still numbers left, we will add the new number to the number set and continue the search.
+    * If we have used all numbers, we will check if the new number is equal to the target number. If it is, we have found the solution. Otherwise, we will backtrack.
+  - Suppose the two numbers we choose are a and b (where a >= b). We will try the four options (a + b), (a - b), (a * b), (a / b) to obtain the new number. Remember to always use the larger number as the first operand.
+  - If the new number is a decimal, or exceeds the maximum intermediate result, we will discard this branch and backtrack.
+  - We will continue this process until we reach the target number with four numbers used or exhaust all possible combinations.
+
+  [EXAMPLES]
+  {demonstration}
+
+  [Problem]
+  Now, solve the following problem. Note that:
+  - Please carefully read the approach and examples provided above, and follow them to solve the problem.
+  - Please ALWAYS include your search procedure (after # Search Procedure). The search procedure should follow the format of the examples provided above.
+  - Please mark your answer with <Solution> and </Solution> tags. The solution should be a sequence of three equations exactly following the format of the examples above, with no additional text in between.
+
+  Numbers: {nums}
+  Target: {target}
