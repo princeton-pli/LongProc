@@ -50,8 +50,8 @@ With the code for loading data and evaluating predictions above you should be ab
 
 For questions, feel free to open issues or email `xi.ye@princeton.edu`.
 
-## Bib
-```
+## References
+```bibtex
 # Dataset
 @article{ye25longproc,
     title={LongProc: Benchmarking Long-Context Language Models on Long Procedural Generation},
@@ -76,7 +76,7 @@ For questions, feel free to open issues or email `xi.ye@princeton.edu`.
 
 <summary>Our benchmarks adapts several existing datasets. Please also cite the original datasets, listed below:</summary>
 
-```
+```bibtex
 @article{arborist,
 author = {Li, Xiang and Zhou, Xiangyu and Dong, Rui and Zhang, Yihong and Wang, Xinyu},
 title = {Efficient Bottom-Up Synthesis for Programs with Local Variables},
