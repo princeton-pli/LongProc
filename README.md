@@ -1,4 +1,4 @@
-# LongProc
+# LongProc: Benchmarking Long-Context Language Models on Long Procedural Generation
 
 [[Paper](https://arxiv.org/pdf/2501.05414)]
 
@@ -11,8 +11,8 @@
 
 ## Release Progress
 
-- [] Loading data and evaluating predictions (in progress, 3/6)
-- [] Running evaluation with [HELMET](https://github.com/princeton-nlp/HELMET)
+- [ ] Loading data and evaluating predictions (in progress, 3/6)
+- [ ] Running evaluation with [HELMET](https://github.com/princeton-nlp/HELMET)
 
 
 ## Data
