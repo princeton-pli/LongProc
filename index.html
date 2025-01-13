@@ -169,7 +169,7 @@
         <br>
         <h2 class="title is-3" id="leaderboard"> Leaderboard: Overall Performance</h2>
         <div class="content has-text-justified">
-          <p> <b>Table: Average performance across six tasks</b> on LongProc under <b>three difficulty levels</b> with maximum numbers of output tokens set at 500, 2K, and 8K. Even frontier models struggle with 8K-token procedural generation tasks. All models show performance degradation with increased output length. Click <a class="fancy_text_color" href="#full_results">here</a> to view detailed results for all tasks across difficulty levels. </p>
+          <p> <b>Table: Average performance across six tasks</b> on LongProc under <b>three difficulty levels</b> with maximum numbers of output tokens set at 500, 2K, and 8K. Even frontier models struggle with 8K-token procedural generation tasks. All models show performance degradation with increased output length. </p>
         </div>
         <div class="content is-9">
           <div class="content has-text-justified">
@@ -178,7 +178,6 @@
             </div>
           </div>
         </div>
-
         <!-- <div class="has-text-centered">
           <img src="./static/images/overall_scores.png" width="70%">
         </div>
@@ -186,49 +185,28 @@
           <p>
             <b>Figure:</b> Average performance across tasks of different LCLMs on LONGPROC at three difficulty levels (0.5K, 2K, 8K). All models show performance degradation with increased output length. Even frontier models struggle with 8K-token procedural generation tasks.</p>
         </div> -->
-        <br>
-        <h3 class="subtitle"><b>Performance Comparison across Tasks</b></h3>
-        <div class="has-text-centered">
-          <p>
-            Performance comparison across tasks and output lengths. We observe steeper performance degradation in tasks requiring long-range reasoning (three tasks at the bottom). Here we list a few representative models. Click <a class="fancy_text_color" href="#full_results">here</a> to view results for all models.
-          </p>
-        </div>
-        <div class="has-text-centered">
-          <img src="./static/images/comparison.png" width="80%">
-        </div>
       </div>
     </div>
 </div>
 </section>
 
-<br><br>
-
-<section class="section no_pad_section">
-  <div class="container is-max-desktop content">
+<section class="section">
+  <div class="container" style="margin-bottom: 2vh;">
+    <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
-
-      <!-- <div></div> -->
-      <h2 class="title is-3">
-        <span >Citation</span>
-      </h2>
-    </div>
-
-    <div class="columns is-centered">
-      <div class="column is-four-fifths">
-        <pre style="border-radius: 25px;">
-<code>@article{ye25longproc,
-    title={LongProc: Benchmarking Long-Context Language Models on Long Procedural Generation},
-    author={Ye, Xi and Yin, Fangcong and He, Yinghui and Zhang, Joie and Howard, Yen and Gao, Tianyu and Durrett, Greg and Chen, Danqi},
-    journal={arXiv preprint},
-    year={2025}
-}</code>
-        </pre>
+      <div class="column is-11">
+        <h2 class="title is-3" id="leaderboard"> Detail Results across Tasks</h2>
+        <div class="content is-11">
+          <div class="content has-text-justified">
+            <div>
+              <div id="table-container-full"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-      
-  </div>
+</div>
 </section>
-
 
 <section id="full_examples" class="section">
   <div class="container" style="margin-bottom: 2vh;">
@@ -259,26 +237,30 @@
   </div> 
 </section>
 
-
-<section class="section no_pad_section">
-  <div class="container" style="margin-bottom: 2vh;">
-    <!-- Abstract. -->
+<section class="section">
+  <div class="container is-max-desktop content">
     <div class="columns is-centered has-text-centered">
-      <div class="column is-11">
-        <h2 class="title is-3" id="leaderboard"> Detail Results across Tasks</h2>
-        <div class="content is-11">
-          <div class="content has-text-justified">
-            <div>
-              <div id="table-container-full"></div>
-            </div>
-          </div>
-        </div>
 
+      <h2 class="title is-3">
+        <span >Citation</span>
+      </h2>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <pre style="border-radius: 25px;">
+<code>@article{ye25longproc,
+    title={LongProc: Benchmarking Long-Context Language Models on Long Procedural Generation},
+    author={Ye, Xi and Yin, Fangcong and He, Yinghui and Zhang, Joie and Howard, Yen and Gao, Tianyu and Durrett, Greg and Chen, Danqi},
+    journal={arXiv preprint},
+    year={2025}
+}</code>
+        </pre>
       </div>
     </div>
-</div>
+      
+  </div>
 </section>
-
 
 
 <footer class="footer" style="padding-bottom: 1.5em; padding-top: 1.5em;">
@@ -329,7 +311,7 @@
         "info": false,
         "order": [[4, 'desc']],
         "scrollX": true,
-        "scrollCollapse": true,
+        "scrollCollapse": false,
         "columnDefs": [
         {targets: 0, className: 'dt-left', className: 'dt-head-left', className: 'fw-bold', className: 'nowrap'},
         ],
