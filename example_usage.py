@@ -36,6 +36,10 @@ def test_loading_all():
 
     [test_loading(d) for d in ["travel_planning_2k", "travel_planning_8k"]]
 
+    [test_loading(d) for d in ["tom_tracking_0.5k", "tom_tracking_2k", "tom_tracking_8k"]]
+
+    [test_loading(d) for d in ["countdown_0.5k", "countdown_2k", "countdown_8k"]]
+
 
 def query_openai(model: str, user_prompt: str, temperature: float, max_tokens: int) -> str:
     client = OpenAI()
@@ -75,6 +79,7 @@ def main():
         print(f"Sample {i+1}/{args.n_samples}")
         print(f"Prompt: {d['input_prompt']}")
         print(f"Reference: {d['reference_output']}")
+        exit()
 
         prediction = query_openai(args.model, d["input_prompt"], args.temperature, args.max_tokens)
 
