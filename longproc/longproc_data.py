@@ -4,7 +4,7 @@ import json
 import os
 import yaml
 import re
-
+from .html_to_tsv_evaluator import evaluate_html_to_csv_compute_metrics
 from .spoc_evaluator import evaluate_spoc_code
 from .travel_planning_evaluator import (
     build_travel_plan_demonstration,
@@ -21,7 +21,66 @@ def _extract_with_tag(response: str, tag: str):
 
 
 def _load_html_to_tsv_data(dataset_name: str, path: str=None) -> Tuple[Dict, Callable]:
-    raise NotImplementedError
+    assert dataset_name in ["html_to_tsv_0.5k","html_to_tsv_2k","html_to_tsv_8k"]
+    if path is None: path = "longpro_data"
+
+    path = os.path.join(path, "html_to_tsv")
+    data_file = os.path.join(path, dataset_name + ".json")
+    with open(data_file, "r") as f:
+        data = json.load(f)
+
+    with open(os.path.join(path, "prompts.yaml"), "r") as f:
+        prompt = yaml.safe_load(f)
+        user_prompt = prompt['USER_PROMPT']
+
+    data_purged = []
+    for d in data:
+        task_id = d["task_id"]
+        website_id = d["website_id"]
+        task_topic = d["task_topic"]
+        task_description = d["task_description"]
+        ground_truth = d["gt"]
+        tsv_header = d["tsv_header"]
+        filtering_instruction = d["filtering_instruction"]
+
+        html_str = open(d["html_path"], 'r').read()
+        
+        data_purged.append({
+            "task_id": task_id,
+            "website_id": website_id,
+            "task_topic": task_topic,
+            "task_description": task_description,
+            "html_str": html_str,
+            "reference_output": ground_truth,
+            "tsv_header": tsv_header,
+            "filtering_instruction": filtering_instruction
+        })
+
+    return {
+        "data": data_purged,
+        "prompt_template": user_prompt,
+    }, eval_html_to_tsv
+
+def eval_html_to_tsv(prediction: str, example: dict):
+    """
+    Returns: metrics (dict) and additional info to update the original sample with (dict)
+    """
+    # metric: f1, precision, recall, extraction_rate
+    try:
+        # prediction should be wrapped with ```tsv and ``` to be parsed
+        search = re.search(r'```tsv([\s\S]*)```', prediction)
+        # exactly one group should be matched
+        if search is not None:
+            prediction = search.group(1).strip()
+        else:
+            if "```tsv" in prediction:
+                prediction = prediction.split("```tsv")[1]
+            prediction = prediction.strip() # use all
+    except Exception as e:
+        ## if "TSV:" is not in the output, then return 0.0 for all metrics because the model didn't follow format
+        return {"f1": .0, "precision": .0, "recall": .0,"extraction_rate": .0}, {"parsed_output": None,"error_msg": str(e)}
+    eval_results = evaluate_html_to_csv_compute_metrics(prediction, example["reference_output"])
+    return {"f1": eval_results["f1"], "precision": eval_results["precision"], "recall": eval_results["recall"],"extraction_rate": 1.0 if eval_results["error"] is None else 0.0}, {"parsed_output": prediction,"error_msg": eval_results["error"]}
 
 def eval_pseudo_to_code(prediction: str, example: dict):
     """
