@@ -50,7 +50,7 @@ def _load_html_to_tsv_data(dataset_name: str, path: str=None) -> Tuple[Dict, Cal
         tsv_header = d["tsv_header"]
         filtering_instruction = d["filtering_instruction"]
 
-        html_str = open(d["html_path"], 'r').read()
+        html_str = open(os.path.join(path, d['html_path']), 'r').read()
         
         data_purged.append({
             "task_id": task_id,

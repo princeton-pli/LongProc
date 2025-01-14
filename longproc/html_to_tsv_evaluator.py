@@ -4,12 +4,12 @@ import string
 import re
 import csv
 
-ARTICLES_REGEX = re.compile(r"\b(a|an|the)\b", re.UNICODE)
-def normalize_answer(s: str):
+_ARTICLES_REGEX = re.compile(r"\b(a|an|the)\b", re.UNICODE)
+def _normalize_answer(s: str):
     """Lower text and remove punctuation, articles and extra whitespace."""
     ## Remove articles
     def remove_articles(text: str) -> str:
-        return ARTICLES_REGEX.sub(" ", text)
+        return _ARTICLES_REGEX.sub(" ", text)
     ## Fix white spaces
     def white_space_fix(text: str) -> str:
         return " ".join(text.split())
@@ -25,13 +25,8 @@ def normalize_answer(s: str):
         return text.lower()
     
     return remove_white_spaces(white_space_fix(remove_articles(remove_punc(lower(s)))))
-    
 
-def clean_spaces(text: str) -> str:
-    ## Clean up unnecessary white spaces
-    return ' '.join(text.split()).lstrip().rstrip().lower()
-
-def string_to_pd(text:[]) -> pd.DataFrame:
+def _string_to_pd(text:[]) -> pd.DataFrame:
     ## Convert a list of string in TSV format to pandas dataframe
     try:
         csv_reader = csv.reader(text, delimiter='\t')
@@ -55,7 +50,7 @@ def string_to_pd(text:[]) -> pd.DataFrame:
         df = df.fillna('N/A')
         ## Normalize all answers
         for column in df.columns:
-            df[column] = df[column].astype(str).apply(normalize_answer)
+            df[column] = df[column].astype(str).apply(_normalize_answer)
         return df
     except Exception as e:
         print(data)
@@ -68,10 +63,10 @@ def  evaluate_html_to_csv_compute_metrics(prediction : str, groundtruth: str) ->
     try:
         ## Convert the groundtruth pandas dataframe
         gt_text = groundtruth.lstrip().rstrip().split('\n') 
-        gt_df = string_to_pd(gt_text)
+        gt_df = _string_to_pd(gt_text)
         ## Convert the prediction to pandas dataframe
         pred_text = prediction.lstrip().rstrip().split('\n')
-        pred_df = string_to_pd(pred_text)
+        pred_df = _string_to_pd(pred_text)
         ## Compute the precision score
         precision = 0
         for i in range(len(pred_df.index)):
