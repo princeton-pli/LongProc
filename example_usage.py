@@ -79,7 +79,6 @@ def main():
         print(f"Sample {i+1}/{args.n_samples}")
         print(f"Prompt: {d['input_prompt']}")
         print(f"Reference: {d['reference_output']}")
-        exit()
 
         prediction = query_openai(args.model, d["input_prompt"], args.temperature, args.max_tokens)
 
