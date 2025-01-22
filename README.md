@@ -36,7 +36,7 @@ Call `load_longproc_data` in `longproc.longproc_data`. The function returns:
 ## Running Evaluation
 With the code for loading data and evaluating predictions above you should be able to flexibly use your own codebase for running experiments.
 
-**(Note: in construction)** In addition, we recommend using the [HELMET](https://github.com/princeton-nlp/HELMET) codebase for more convenient evaluation. Please refer to the `LongProc` branch of HELMET (under construction) for evaluating LongProc with HELMET.
+In addition, we recommend using the [HELMET](https://github.com/princeton-nlp/HELMET) codebase for more convenient evaluation. Please refer to the [`LongProc Addon`](https://github.com/princeton-nlp/HELMET/blob/longproc/longproc_addon/README.md)  of HELMET for evaluating LongProc.
 
 ## Contacts
 
