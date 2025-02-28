@@ -3,17 +3,25 @@ import random
 
 from longproc.longproc_data import load_longproc_data
 from openai import OpenAI
+from tqdm import tqdm
 
+try:
+    import torch
+    from vllm import LLM, SamplingParams, TokensPrompt
+    from transformers import AutoTokenizer
+except ImportError:
+    pass
 
 def _parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dataset", type=str, default="path_traversal_0.5k")
+    parser.add_argument("--dataset", type=str, default="html_to_tsv_0.5k")
     parser.add_argument("--path", type=str, default="./data", help="Path to data")
-    parser.add_argument("--n_samples", type=int, default=5, help="Number of samples")
+    parser.add_argument("--n_samples", type=int, default=10, help="Number of samples")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
 
     parser.add_argument("--max_tokens", type=int, default=None, help="Max tokens")
     parser.add_argument("--temperature", type=float, default=0.0, help="Temperature")
+    parser.add_argument("--top_p", type=float, default=1.0, help="Top p")
     parser.add_argument("--model", type=str, default="gpt-4o-mini-2024-07-18", help="Model")
 
     parser.add_argument("--test_loading", action="store_true", help="Test loading data")
@@ -41,7 +49,7 @@ def test_loading_all():
     [test_loading(d) for d in ["countdown_0.5k", "countdown_2k", "countdown_8k"]]
 
 
-def query_openai(model: str, user_prompt: str, temperature: float, max_tokens: int) -> str:
+def query_openai(model: str, user_prompt: str, max_tokens: int, temperature: float, top_p: float) -> str:
     client = OpenAI()
     completion = client.chat.completions.create(
         model=model,
@@ -51,6 +59,37 @@ def query_openai(model: str, user_prompt: str, temperature: float, max_tokens: i
     )
 
     return completion.choices[0].message.content
+
+
+class _VLLMBackend:
+    llm = None
+    tokenizer = None
+    init_args = None # model_name, max_model_len
+
+def query_hf(model: str, user_prompt: str, max_tokens: int, temperature: float, top_p: float) -> str:
+    if _VLLMBackend.llm is None:
+        tokenizer = AutoTokenizer.from_pretrained(model, trust_remote_code=True,)
+        _VLLMBackend.llm = LLM(model=model, tensor_parallel_size=torch.cuda.device_count(), dtype="auto",)
+        _VLLMBackend.tokenizer = tokenizer
+
+    llm = _VLLMBackend.llm
+    sampling_params = SamplingParams(temperature=temperature, max_tokens=max_tokens, top_p=top_p)
+    tokenizer = _VLLMBackend.tokenizer
+
+    prompt = [{"role": "user", "content": user_prompt}]
+    # NOTE: pass in token ids which we find returns better results closer to hf generate
+    token_prompt = TokensPrompt(prompt_token_ids=tokenizer.apply_chat_template(conversation=prompt, add_generation_prompt=True, tokenize=True,))
+
+    outputs = llm.generate(
+        prompts=[token_prompt],
+        sampling_params=sampling_params,
+        use_tqdm=False,
+    )
+
+    generated_text = outputs[0].outputs[0].text
+
+    return generated_text
+
 
 def main():
     args = _parse_args()
@@ -73,20 +112,27 @@ def main():
 
     dataset, eval_func = load_longproc_data(args.dataset, args.path)
     random.shuffle(dataset)
+    if args.n_samples is not None:
+        dataset = dataset[:args.n_samples]
 
     eval_metrics = []
-    for i, d in enumerate(dataset[:args.n_samples]):
-        print(f"Sample {i+1}/{args.n_samples}")
-        print(f"Prompt: {d['input_prompt']}")
-        print(f"Reference: {d['reference_output']}")
+    num_inspect = 2
+    for i, d in tqdm(list(enumerate(dataset[:args.n_samples]))):
+        if i < num_inspect:
+            print(f"Sample {i+1}/{args.n_samples}")
+            print(f"Prompt: {d['input_prompt']}")
+            print(f"Reference: {d['reference_output']}")
 
-        prediction = query_openai(args.model, d["input_prompt"], args.temperature, args.max_tokens)
+        if "gpt" in args.model:
+            prediction = query_openai(args.model, d["input_prompt"], args.max_tokens, args.temperature, args.top_p)
+        else:
+            prediction = query_hf(args.model, d["input_prompt"], args.max_tokens, args.temperature, args.top_p)
 
         metrics, additional_info = eval_func(prediction, d)
-
-        print(f"Prediction: {prediction}")
-        print(f"Metrics: {metrics}")
-        print(f"Additional info: {additional_info}")
+        if i < num_inspect:
+            print(f"Prediction: {prediction}")
+            print(f"Metrics: {metrics}")
+            print(f"Additional info: {additional_info}")
         eval_metrics.append(metrics)
 
     for k, v in metrics.items():

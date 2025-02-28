@@ -19,13 +19,20 @@ operations to reach a target number.
 * `travel_planning` (Travel Planning): Search to create a trip plan based on constraints regarding duration of stays, and direct flights.
 
 ### Example
-Please install the necessary packages with `pip install -r requirements.txt`.
+NOTE: This repository mainly serves for managing data, we provide **minimal** code exmples for playing around with loading and evaluating on our dataset. Please install the necessary packages with `pip install -r requirements.txt`.
 
-We provide easily understandable examples for loading data and evaluating the results in `example_usage.py`. The example uses `gpt-4o-mini` API, please install `openai` and setup your `OPENAI_API_KEY` if you would like to run the example.
+We provide easily understandable examples for loading data and evaluating the results in `example_usage.py`
+
+**Using OPENAI**: please install `openai` and setup your `OPENAI_API_KEY` if you would like to run the example.
 
 ```bash
-python example_usage.py --dataset path_traversal_0.5k
+python example_usage.py --dataset html_to_tsv_0.5k --model gpt-4o-mini
 # dataset names are specified as [task_name]_[length]
+```
+**Using VLLM**: please set up your environment with vllm
+
+```bash
+python example_usage.py --dataset html_to_tsv_0.5k --model meta-llama/Llama-3.1-8B
 ```
 
 ### Loading Data and Evaluation Function
