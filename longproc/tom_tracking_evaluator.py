@@ -17,7 +17,8 @@ def _normalize_tom(s):
 
 
 def _extract_belief_content(line):
-    if line.startswith('-'):
+    # line should start with - Step and a numer
+    if re.match(r'^- Step \d+:', line):
         # Split on the first hyphen and get the content after it
         belief_content = line.split('-', 1)[1].strip()
         # Normalize the belief content

@@ -211,6 +211,9 @@ def evaluate_countdown_final_solution(nums: list, target: int, solution: str) ->
             correct, a, b, c, op = _parse_line(line)
         except ValueError:
             return False
+        except Exception as e:
+            print(e)
+            return False
         if not correct:
             return False
         if a not in nums:
