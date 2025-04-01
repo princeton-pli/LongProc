@@ -28,9 +28,13 @@ def _extract_belief_content(line):
         return None
 
 def evaluate_tom_trace(model_response_text, ground_truth_text):
+    # start eval from the last place where the trace starts, ignore internal thinking inside cot
+    if "- Step 0:" in model_response_text:
+        start_index = model_response_text.rfind("- Step 0:")
+        model_response_text = model_response_text[start_index:]
     model_responses = model_response_text.strip().split('\n')
     ground_truth_responses = ground_truth_text.strip().split('\n')
-    
+
     # Process the lines to extract belief contents
     model_beliefs = [_extract_belief_content(line) for line in model_responses if _extract_belief_content(line)]
     ground_truth_beliefs = [_extract_belief_content(line) for line in ground_truth_responses if _extract_belief_content(line)]
