@@ -8,6 +8,7 @@ import json
 
 from cached_query_tool import cached_batch_query
 from longproc.longproc_data import load_longproc_data
+from datasets import Dataset as HFDataset
 
 def _parse_args():
     parser = argparse.ArgumentParser()
@@ -16,7 +17,7 @@ def _parse_args():
     # data quantity
     parser.add_argument("--dataset", type=str, default="tom_tracking_0.5k")
     parser.add_argument("--path", type=str, default="./data", help="Path to data")
-    parser.add_argument("--n_samples", type=int, default=100, help="Number of samples")
+    parser.add_argument("--n_samples", type=int, default=105, help="Number of samples")
 
     # query args
     parser.add_argument("--model", type=str, default="gpt-4o-mini-2024-07-18")
@@ -46,6 +47,23 @@ def output_filename_func(args):
     output_filename = f"{args.dataset}_max{args.max_tokens}t{args.temperature}p{args.top_p}_{args.seed}.json"
     return os.path.join(args.output_dir, output_filename)
 
+# use this way to sample subset to make it complt with the original sample in the paper evaluation
+def subsample_dataset(dataset, n_samples, seed=42):
+    if not isinstance(dataset, HFDataset) and isinstance(dataset, list):
+        dataset = HFDataset.from_list(dataset)
+    dataset = dataset.shuffle(seed=seed).select(range(min(n_samples, len(dataset))))
+    return dataset
+
+def load_longproc_local_hf_dataset(dataset,):
+    print("using local hf dataset")
+    import datasets
+    from longproc.longproc_data import load_long_proc_eval_func
+    # load dataset
+    hf_dataset = datasets.load_dataset("json", data_files=f"hf_datasets/{dataset}.jsonl",)["train"]
+    # load eval function
+    eval_func = load_long_proc_eval_func(dataset)
+    return hf_dataset, eval_func
+
 def main():
     args = _parse_args()
     # set random seed
@@ -53,10 +71,11 @@ def main():
     np.random.seed(args.seed)
 
     dataset, eval_func = load_longproc_data(args.dataset, args.path)
+    # dataset, eval_func = load_longproc_local_hf_dataset(args.dataset)
 
     if args.n_samples is not None:
-        random.shuffle(dataset)
-        dataset = dataset[:args.n_samples]
+        # use this way to sample subset to make it complt with the original sample in dataset
+        dataset = subsample_dataset(dataset, args.n_samples, args.seed)
 
     prompts = []
     for ex in dataset:
@@ -94,6 +113,5 @@ def main():
     with open(output_filename, "w") as f:
         json.dump(output_content, f, indent=2)
 
-    
 if __name__=="__main__":
     main()

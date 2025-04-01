@@ -257,6 +257,7 @@ def eval_countdown(prediction: str, example: dict):
     pred_solution = _extract_with_tag(prediction, "Solution")
     nums = data_item["nums"]
     target = data_item["target"]
+    ground_truth_procedure = example["reference_output"]
     if pred_solution is not None and evaluate_countdown_final_solution(nums, target, pred_solution):
             return {"accuracy": 1.0, "partial_accuracy": 1.0, "extraction_rate": 1.0}, {"parsed_output": pred_solution,}
 
@@ -267,7 +268,6 @@ def eval_countdown(prediction: str, example: dict):
 
     pred_procedure = prediction.split("# Search Procedure")[-1].strip()
 
-    ground_truth_procedure = data_item["reference_output"]
     # evaluate the procedure
     gt_procedure = ground_truth_procedure.split("# Search Procedure")[-1].split("Now we have found the target")[0].strip()
 
@@ -329,6 +329,7 @@ def _load_countdown_data(dataset_name: str, path: str=None) -> Tuple[Dict, Calla
 def eval_travel_planning(prediction: str, example: dict):
     plan_text = _extract_with_tag(prediction, "Plan")
     data_item = example["item"]
+    ground_truth_procedure = example["reference_output"]
     if plan_text is None:
         extraction_rate = 0.0
     else:
@@ -344,7 +345,6 @@ def eval_travel_planning(prediction: str, example: dict):
         partial_accuracy = 1.0
         error_report = None
     else:
-        ground_truth_procedure = example["reference_output"]
         partial_accuracy, error_report = evaluate_travel_plan_search_procedure(data_item, prediction, ground_truth_procedure)
     return {
         "accuracy": accuracy,
@@ -413,6 +413,89 @@ def _load_travel_planning_data(dataset_name: str, path: str=None) -> Tuple[Dict,
     }, eval_travel_planning
 
 
+## Adding formatonly data to test the effectiveness of LongProc CoT
+def _load_countdown_formatonly_data(dataset_name: str, path: str=None) -> Tuple[Dict, Callable]:
+    assert dataset_name in ["countdown_formatonly_0.5k", "countdown_formatonly_2k", "countdown_formatonly_8k"]
+
+    if path is None: path = "longproc_data"
+
+    path = os.path.join(path, "countdown")
+
+    data_file = os.path.join(path, dataset_name.replace("_formatonly_", "_") + ".json")
+    with open(data_file, "r") as f:
+        data = json.load(f)
+
+    with open(os.path.join(path, "formatonly_prompts.yaml"), "r") as f:
+        prompt = yaml.safe_load(f)
+        user_prompt = prompt['USER_PROMPT']
+
+    # partially fill the user prompt
+    user_prompt = user_prompt.format(nums="{nums}", target="{target}")
+
+    data_purged = []
+    for d in data:
+        nums = d["nums"]
+        target = d["target"]
+        solution, demonstration = build_countdown_demonstration(nums[:], target)
+        solution_str = "\n".join(solution)
+        assert evaluate_countdown_final_solution(nums, target, solution_str), f"Failed to evaluate solution {solution_str}"
+        data_purged.append({
+            "nums": nums,
+            "target": target,
+            "solution": solution,
+            "reference_output": demonstration,
+        })
+
+    return {
+        "data": data_purged,
+        "prompt_template": user_prompt,
+    }, eval_countdown
+
+
+def _load_travel_planning_format_only_data(dataset_name: str, path: str=None) -> Tuple[Dict, Callable]:
+    assert dataset_name in ["travel_planning_formatonly_2k", "travel_planning_formatonly_8k"]
+
+    if path is None: path = "longproc_data"
+    path = os.path.join(path, "travel_planning")
+
+    data_file = os.path.join(path, "travel_planning_all.json")
+    with open(data_file, "r") as f:
+        data = json.load(f)
+
+    with open(os.path.join(path, "formatonly_prompts.yaml"), "r") as f:
+        prompt = yaml.safe_load(f)
+        user_prompt = prompt['USER_PROMPT']
+
+    if "_2k" in dataset_name:
+        output_range = (0, 2048)
+    elif "_8k" in dataset_name:
+        output_range = (4096, 8192)
+    else:
+        raise ValueError(f"Unknown dataset name: {dataset_name}")
+
+    data = [d for d in data if output_range[0] <= d["estimated_output_tokens"] < output_range[1]]
+
+
+    data_purged = []
+    for d in data:
+        ground_truth_procedure = build_travel_plan_demonstration(d)
+        disambig_question_text = d["disambig_question_text"]
+
+        data_purged.append({
+            "id": d["id"],
+            "problem": disambig_question_text,
+            "ground_truth_plan": d["ground_truth_plan"],
+            "ground_truth_cities": d["ground_truth_cities"],
+            "ground_truth_durations": d["ground_truth_durations"],
+            "reference_output": ground_truth_procedure,
+        })
+
+    return {
+        "data": data_purged,
+        "prompt_template": user_prompt,
+    }, eval_travel_planning
+
+
 def load_longproc_data(dataset_name: str, path: str=None) -> Tuple[List, Callable]:
     """
     Load the dataset and evaluation function given the dataset name and path.
@@ -429,6 +512,8 @@ def load_longproc_data(dataset_name: str, path: str=None) -> Tuple[List, Callabl
         "tom_tracking": _load_tom_tracking_data,
         "countdown": _load_countdown_data,
         "travel_planning": _load_travel_planning_data,
+        "countdown_formatonly": _load_countdown_formatonly_data,
+        "travel_planning_formatonly": _load_travel_planning_format_only_data,
     }
     
     if dataset_basename in dataset_loaders:
@@ -442,8 +527,13 @@ def load_longproc_data(dataset_name: str, path: str=None) -> Tuple[List, Callabl
     data = packed_data["data"]
 
     upacked_data = []
-    for d in data:
+    for i, d in enumerate(data):
+        if "id" in d:
+            id = d["id"]
+        else:
+            id = f"{dataset_name}_{i}"
         upacked_data.append({
+            "instance_id": id,
             "input_prompt": template.format(**d),
             "reference_output": d["reference_output"],
             "item": d
@@ -453,3 +543,23 @@ def load_longproc_data(dataset_name: str, path: str=None) -> Tuple[List, Callabl
 
     return upacked_data, eval_func
 
+def load_long_proc_eval_func(dataset_name: str) -> Callable:
+    """
+    Load the evaluation function given the dataset name.
+    returns: evaluation function
+    """
+    dataset_basename = dataset_name.rsplit("_", 1)[0]
+
+    dataset_loaders = {
+        "html_to_tsv": eval_html_to_tsv,
+        "pseudo_to_code": eval_pseudo_to_code,
+        "path_traversal": eval_path_traversal,
+        "tom_tracking": eval_tom_tracking,
+        "countdown": eval_countdown,
+        "travel_planning": eval_travel_planning,
+    }
+
+    if dataset_basename in dataset_loaders:
+        return dataset_loaders[dataset_basename]
+    else:
+        raise ValueError(f"Unknown dataset name: {dataset_name}")

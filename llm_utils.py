@@ -127,6 +127,45 @@ def _batch_vllm_query(
     return canonical_outputs
 
 
+# NOTE: ONLY return 1 output per prompt
+def _batch_hf_query(
+        prompts: List[Any],
+        model_name: str,
+        max_tokens: int,
+        temperature: float,
+        top_p: float = 1.0,
+        max_model_len: int = None,
+        query_kwargs: dict = {}, # TODO: not using query_kwargs yet
+        aux_kwargs: dict = {},
+    ):
+    assert model_name.startswith("hf/")
+    model_name = model_name[len("hf/"):]
+
+    import torch
+    from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, AutoConfig
+    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+    config = AutoConfig.from_pretrained(model_name, trust_remote_code=True)
+    model = AutoModelForCausalLM.from_pretrained(model_name, config=config, device_map="auto", trust_remote_code=True)
+
+    all_outputs = []
+    with torch.inference_mode():
+        for prompt in tqdm(prompts):
+            input_ids = tokenizer.apply_chat_template([prompt], tokenize=True, add_generation_prompt=True, return_tensors="pt").to(model.device)
+            input_length = input_ids.shape[1]
+            outputs = model.generate(
+                input_ids,
+                max_new_tokens=max_tokens,
+                do_sample=False if temperature == 0.0 else True,
+                temperature=temperature,
+                top_p=top_p,
+                pad_token_id=tokenizer.eos_token_id,
+            )
+            gen_answer = tokenizer.decode(outputs[0][input_length:], skip_special_tokens=True)
+            all_outputs.append({"model": model_name, "prompt": prompt, "output": gen_answer, "success": True,})
+
+    return all_outputs
+
+
 ## OBSOLETE: using token ids gives better results than using chat prompt
 def _batch_vllm_query_chat_prompt(
         prompts: List[Any],
@@ -180,6 +219,8 @@ def batch_query(
     ):
     if model_name.startswith("gpt"):
         outputs = _batch_openai_query(prompts, model_name, gen_max_tokens, temperature, top_p, max_model_len, query_kwargs=query_kwargs, aux_kwargs=aux_kwargs)
+    elif model_name.startswith("hf/"):
+        outputs = _batch_hf_query(prompts, model_name, gen_max_tokens, temperature, top_p, max_model_len, query_kwargs=query_kwargs, aux_kwargs=aux_kwargs)
     elif model_name.startswith("vllm/"):
         outputs = _batch_vllm_query(prompts, model_name, gen_max_tokens, temperature, top_p, max_model_len, query_kwargs=query_kwargs, aux_kwargs=aux_kwargs)
     else:
