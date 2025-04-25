@@ -155,6 +155,9 @@
     <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-9">
+        <p> <span style="font-size: larger">&#128276;</span> <b>Update on Reasoning Models:</b> How do reasoning models perform on LongProc? Check out <a class="fancy_text_color" href="https://princeton-pli.github.io/LongProc/rmodels">our blog showing how training for long chain-of-thought improves general long-form generation!</a>
+        </p>
+        <br>
         <h2 class="title is-3">Introduction</h2>
         <div class="content has-text-justified">
           <p> Existing benchmarks for evaluating long-context language models (LCLMs) primarily focus on long-context recall, requiring models to produce short responses based on a few critical snippets while processing thousands of irrelevant tokens.
@@ -163,7 +166,7 @@
             We introduce <b>LongProc</b> (<b>Long Proc</b>edural Generation), a new benchmark that requires both the <b>integration of highly dispersed information</b> and <b>long-form generation</b>. LongProc consists of <b>six diverse</b> procedural generation tasks, such as extracting structured information from HTML pages into a TSV format and executing complex search procedures to create travel plans. These tasks challenge LCLMs by testing their ability to follow detailed procedural instructions, synthesize and reason over dispersed information, and generate structured, long-form outputs (up to 8K tokens). Furthermore, as these tasks adhere to deterministic procedures and yield structured outputs, they enable reliable rule-based evaluation.
           </p>
           <p>
-            We evaluate 17 LCLMs on LongProc across three difficulty levels, with maximum numbers of output tokens set at 500, 2K, and 8K. Notably, while all tested models claim a context window size above 32K tokens, open-weight models typically falter on 2K-token tasks, and closed-source models like GPT-4o show significant degradation on 8K-token tasks. Further analysis reveals that LCLMs struggle to maintain long-range coherence in long-form generations. These findings highlight critical limitations in current LCLMs and suggest substantial room for improvement.
+            We evaluated 23 LCLMs, including instruction-tuned models and recent reasoning models, on LongProc at three difficulty levels, with the maximum number of output tokens set at 500, 2K, and 8K. Notably, while all tested models claim a context window size above 32K tokens, open-weight models typically falter on 2K-token tasks, and closed-source models like GPT-4o show significant degradation on 8K-token tasks. Reasoning models achieve stronger overall performance in long-form generation, benefiting from long CoT training. Further analysis reveals that LCLMs struggle to maintain long-range coherence in long-form generations. These findings highlight critical limitations in current LCLMs and suggest substantial room for improvement.
           </p>
         </div>
         <br>
